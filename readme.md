@@ -19,3 +19,7 @@ sada
 finally workedd
 
 ![](2025-01-04-06-20-28.png)
+
+when asked about something irrelevant
+
+![](2025-01-04-07-37-50.png)
