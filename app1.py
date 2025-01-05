@@ -110,11 +110,15 @@ def call_llm(context:str, prompt:str):
             break
 
 if __name__ == "__main__":
+
+    st.set_page_config(page_title="HQST Chatbot")
+
     with st.sidebar:
-        st.set_page_config(page_title="HQST Chatbot")
-        st.header("HQST Chatbot")
+       
+        st.image("HQST.jpg")
+        st.header("Add Documents")
         uploaded_file = st.file_uploader(
-            "** Upload PDF file for QnA**", type=["pdf"], accept_multiple_files=False
+            "Upload PDF file here", type=["pdf"], accept_multiple_files=False
         )
 
         process = st.button(
@@ -128,8 +132,9 @@ if __name__ == "__main__":
             all_splits = process_document(uploaded_file)
             add_to_vector_collection(all_splits, normalize_uploaded_file_name)
     
+    st.image("Picture1.jpg", caption="HQST Building")
     st.header("HQST Chatbot")
-    prompt = st.text_area("**Ask a question related to your document:**")
+    prompt = st.text_area("**Ask a question related to uploaded documents:**")
     ask = st.button(
         "Ask",
     )
