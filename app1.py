@@ -50,6 +50,7 @@ def process_document(uploaded_file: UploadedFile) -> list[Document]:
         chunk_overlap=100,
         separators=["\n\n", "\n", ".", "?","!", " ", ""]
     )
+    # print(text_splitter.split_documents(docs))
     return text_splitter.split_documents(docs)
 
 def get_vector_collection() -> chromadb.Collection:
@@ -58,9 +59,10 @@ def get_vector_collection() -> chromadb.Collection:
         model_name="nomic-embed-text:latest",
     )
 
-    chroma_client = chromadb.PersistentClient(path="./demo-rag-chroma")
+
+    chroma_client = chromadb.PersistentClient(path="./demo-rag-chroma2")
     return chroma_client.get_or_create_collection(
-        name="rag-app",
+        name="rag-app2",
         embedding_function=ollama_ef,
         metadata={"hnsw:space":"cosine"},
     )
@@ -69,20 +71,27 @@ def get_vector_collection() -> chromadb.Collection:
 
 def add_to_vector_collection(all_splits: list[Document], file_name: str):
     collection = get_vector_collection()
+    
+    print("Collection details:", collection)
+    print("add to vector collection: ")
     documents, metadatas, ids = [], [], []
     for idx, split in enumerate(all_splits):
         documents.append(split.page_content)
         metadatas.append(split.metadata)
         ids.append(f"{file_name}_{idx}")
     
+    print(len(documents), len(metadatas), ids)
+
+  
+
     collection.upsert(
-        documents=documents,
-        metadatas =metadatas,
-        ids=ids,
+    documents=documents[:5],
+    metadatas=metadatas[:5],
+    ids=ids[:5],
     )
     st.success("data added to the vector store!")
 
-def query_collection(prompt: str, n_results: int = 10):
+def query_collection(prompt: str, n_results: int = 100):
     collection = get_vector_collection()
     results = collection.query(query_texts=[prompt], n_results=n_results)
     return results
@@ -129,8 +138,11 @@ if __name__ == "__main__":
             normalize_uploaded_file_name = uploaded_file.name.translate(
                 str.maketrans({"-":"_",".":"_", " ":"_"})
             )
+            print("going to process document")
             all_splits = process_document(uploaded_file)
+            print("after processing document")
             add_to_vector_collection(all_splits, normalize_uploaded_file_name)
+            print("add to vector collection completed")
     
     st.image("Picture1.jpg", caption="HQST Building")
     st.header("HQST Chatbot")
@@ -145,3 +157,5 @@ if __name__ == "__main__":
         response = call_llm(context=context, prompt=prompt)
 
         st.write_stream(response)
+        st.divider()
+        # st.write(results)
