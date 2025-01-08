@@ -52,4 +52,7 @@ pip install ollama chromadb sentence-transformers streamlit pymupdf langchain-co
 
 ollama pull nomic-embed-text
 
+Final
+
+![](2025-01-08-23-04-29.png)
 
